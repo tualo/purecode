@@ -162,7 +162,7 @@ int main( int argc, char** argv ){
   im->barcode();
 
   struct tm* clock;               // create a time structure
-  struct stat attrib;         // create a file attribute structure
+  struct stat::stat attrib;         // create a file attribute structure
   const char* cstrfname =  args::get(filename).c_str();
   stat(cstrfname, &attrib);     // get the attributes of afile.txt
   clock = gmtime(&(attrib.st_mtime)); // Get the last modified time and put it into the time structure

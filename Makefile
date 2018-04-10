@@ -29,7 +29,7 @@ CXX				?= g++
 
 LD         := $(CXX)
 CPPFLAGS   := $(shell mysql_config --cflags) -I/usr/local/include $(shell pkg-config zbar --cflags) $(shell pkg-config opencv --cflags) $(shell pkg-config tesseract --cflags) $(TESSERACT_CPPFLAGS)
-CXXFLAGS   := -Wall -std=c++14 -O3  #e.g., CXXFLAGS=-g -O0 for debugging
+CXXFLAGS   := -Wall -std=c++14 -O3 -m64  #e.g., CXXFLAGS=-g -O0 for debugging
 LDFLAGS    := $(shell mysql_config --libs_r)
 
 ifeq ($(OS),Darwin)

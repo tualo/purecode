@@ -31,7 +31,9 @@
 #include <zbar.h>
 
 
+#define int64 int64_I_dont_care
 #include <my_global.h>
+#undef int64
 #include <mysql.h>
 
 #include <dmtx.h>

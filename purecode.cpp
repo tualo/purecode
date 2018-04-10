@@ -37,7 +37,7 @@
 
 
 boost::format isotimeformat("%04d-%02d-%02d %02d:%02d:%02d");
-boost::format insertfile("insert into sv_images_extended (id,createdate,server,filename) values ('%s','%s',SUBSTRING_INDEX(USER(),'@',-1),'%s') on duplicate key update id=values(id), createdate=values(createdate), server=values(server), filename=values(filename) ");
+boost::format insertfile("insert into sv_images_extended (id,createdate,server,filename) values ('%s','%s','%s','%s') on duplicate key update id=values(id), createdate=values(createdate), server=values(server), filename=values(filename) ");
 boost::format insertcode("insert into sv_images_extended_codes (id,code) values ('%s','%s') on duplicate key update code=values(code) ");
 
 std::string version="1.0.001";
@@ -78,6 +78,7 @@ int main( int argc, char** argv ){
 
   args::Flag savedb(parser, "savedb", "store results in db", {"savedb"});
   args::ValueFlag<std::string> argresultpath(parser, "resultpath", "The resultpath", {"result"});
+  args::ValueFlag<std::string> argserverid(parser, "serverid", "The serverid", {"serverid"});
   args::Flag removeorignal(parser, "removeorignal", "remove orignal file", {"removeorignal"});
 
 
@@ -96,6 +97,11 @@ int main( int argc, char** argv ){
       }
       
       if (filename==0){
+        std::cout << parser;
+        return 0;
+      }
+
+      if (argserverid==0){
         std::cout << parser;
         return 0;
       }
@@ -133,11 +139,13 @@ int main( int argc, char** argv ){
   const char* str_db_name = "sorter";
   const char* str_db_password = "";
   const char* str_db_encoding = "utf8";
+  const char* str_server_id = "none";
   if (db_encoding){ str_db_encoding= (args::get(db_encoding)).c_str(); }
   if (db_host){ str_db_host= (args::get(db_host)).c_str(); }
   if (db_user){ str_db_user= (args::get(db_user)).c_str(); }
   if (db_name){ str_db_name= (args::get(db_name)).c_str(); }
   if (db_pass){ str_db_password= (args::get(db_pass)).c_str(); }
+  if (argserverid){ str_server_id= (args::get(argserverid)).c_str(); }
 
   MYSQL *con = mysql_init(NULL);
 
@@ -165,9 +173,13 @@ int main( int argc, char** argv ){
 
   std::time_t t = boost::filesystem::last_write_time( args::get(filename) ) ;
   std::string isotime = "2000-01-01 01:01:01";
+  std::string isodate = "2000-01-01";
   char mbstr[100];
   if (std::strftime(mbstr, sizeof(mbstr), "%F %T", std::localtime(&t))) {
-      std::string isotime = std::string(mbstr);
+      isotime = std::string(mbstr);
+  }
+  if (std::strftime(mbstr, sizeof(mbstr), "%F", std::localtime(&t))) {
+      isodate = std::string(mbstr);
   }
 
 
@@ -177,6 +189,20 @@ int main( int argc, char** argv ){
 
   if (argresultpath){ resultpath=args::get(argresultpath); }
   std::string id = boost::filesystem::basename(args::get(filename).c_str());
+  
+
+  
+  boost::replace_all(resultpath, "#DATE", isodate);
+
+  const char* path = resultpath.c_str();
+  boost::filesystem::path dir(path);
+  if( !boost::filesystem::is_directory(dir) ) 
+  { 
+    if(boost::filesystem::create_directory(dir))
+    {
+      std::cout<< "Directory Created: "<<resultpath<<std::endl;
+    }
+  }
   std::string fname = boost::str( boost::format("%s/%s.jpg") % resultpath % id );
 
 
@@ -212,7 +238,7 @@ int main( int argc, char** argv ){
   }
 
   if (savedb==1){
-    std::string insertfile_sql = boost::str(insertfile % uuid % isotime % fname );
+    std::string insertfile_sql = boost::str(insertfile % uuid % isotime % str_server_id % fname );
     if (mysql_query(con, insertfile_sql.c_str())){
       fprintf(stderr, "%s\n", mysql_error(con));
     }

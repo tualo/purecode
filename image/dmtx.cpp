@@ -58,8 +58,8 @@ SetDecodeOptions(DmtxDecode *dec, DmtxImage *img, UserOptions *opt)
    RETURN_IF_FAILED(err)
 
    if(opt->gs1 != DmtxUndefined) {
-      err = dmtxDecodeSetProp(dec, DmtxPropFnc1, opt->gs1);
-      RETURN_IF_FAILED(err)
+      //err = dmtxDecodeSetProp(dec, DmtxPropFnc1, opt->gs1);
+      //RETURN_IF_FAILED(err)
    }
 
    if(opt->edgeMin != DmtxUndefined) {

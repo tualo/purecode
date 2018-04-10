@@ -42,14 +42,13 @@ endif
 all				: $(NAME)
 
 $(NAME)			: $(NAME).o
-	$(LD) $(LDFLAGS) -o $@ glob_posix.o purecode.o $(LDLIBS)
+	$(LD) $(LDFLAGS) -o $@ purecode.o $(LDLIBS)
 
 SOURCES := $(shell find . -name '*.cpp')
 HEADERS := $(shell find . -name '*.h')
 
 
 $(NAME).o: $(SOURCES) $(HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c ./glob_posix.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c ./Image.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c ./purecode.cpp
 

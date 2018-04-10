@@ -141,7 +141,7 @@ int main( int argc, char** argv ){
   if (db_pass){ str_db_password= (args::get(db_pass)).c_str(); }
 
   MYSQL *con = mysql_init(NULL);
-//str_db_encoding.c_str()
+
   mysql_options(con, MYSQL_SET_CHARSET_NAME, "utf8");
   mysql_options(con, MYSQL_INIT_COMMAND, "SET NAMES utf8");
 
@@ -203,20 +203,11 @@ int main( int argc, char** argv ){
   
 
 
-//    std::cout  << "Mat" << std::endl;
   if (savedb==1){
     std::vector<int> params;
     params.push_back(CV_IMWRITE_JPEG_QUALITY);
     params.push_back(100);
-
-//    std::cout  << "Mat "  << fname.c_str() << std::endl;
     im->save(fname,params);
-//    std::cout  << "Mat "  << fname.c_str() << std::endl;
-    /*
-    cv::Mat mat = im->getImage();
-    cv::imwrite(fname.c_str(),mat);//,params);
-    std::cout  << "Mat " << mat.cols<<" x "<<mat.rows << std::endl;
-    */
   }
 
   if (savedb==1){

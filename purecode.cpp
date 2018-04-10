@@ -203,7 +203,7 @@ int main( int argc, char** argv ){
       std::cout<< "Directory Created: "<<resultpath<<std::endl;
     }
   }
-  std::string fname = boost::str( boost::format("%s/%s.jpg") % resultpath % id );
+  std::string fname = boost::str( boost::format("%s%s.jpg") % resultpath % id );
 
 
   std::cout << "ALL CODES: " << std::endl;

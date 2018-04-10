@@ -162,14 +162,11 @@ int main( int argc, char** argv ){
   im->open((args::get(filename)).c_str());
   im->barcode();
 
-/
 
   std::time_t t = boost::filesystem::last_write_time( args::get(filename) ) ;
   std::string isotime = "2000-01-01 01:01:01";
-//  std::string isotime = std::put_time(std::gmtime(&t),"%F %T");
   char mbstr[100];
   if (std::strftime(mbstr, sizeof(mbstr), "%F %T", std::localtime(&t))) {
-      std::cout << mbstr << '\n';
       std::string isotime = std::string(mbstr);
   }
 

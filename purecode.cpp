@@ -5,6 +5,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
 #include <boost/chrono.hpp>
+#include <ctime>
 
 #include <sys/time.h>
 #include <stdio.h>
@@ -161,12 +162,17 @@ int main( int argc, char** argv ){
   im->open((args::get(filename)).c_str());
   im->barcode();
 
-  struct tm* clock;               // create a time structure
-  struct stat::stat attrib;         // create a file attribute structure
-  const char* cstrfname =  args::get(filename).c_str();
-  stat(cstrfname, &attrib);     // get the attributes of afile.txt
-  clock = gmtime(&(attrib.st_mtime)); // Get the last modified time and put it into the time structure
-  std::string isotime = boost::str(isotimeformat % (1900+clock->tm_year) % (clock->tm_mon+1) % (clock->tm_mday) % (clock->tm_hour) % (clock->tm_min) % (clock->tm_sec) );
+/
+
+  std::time_t t = boost::filesystem::last_write_time( args::get(filename) ) ;
+  std::string isotime = "2000-01-01 01:01:01";
+//  std::string isotime = std::put_time(std::gmtime(&t),"%F %T");
+  char mbstr[100];
+  if (std::strftime(mbstr, sizeof(mbstr), "%F %T", std::localtime(&t))) {
+      std::cout << mbstr << '\n';
+      std::string isotime = std::string(mbstr);
+  }
+
 
   std::vector<std::string> codes = im->getCodes();
   std::string resultpath = "";

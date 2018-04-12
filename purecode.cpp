@@ -78,6 +78,7 @@ int main( int argc, char** argv ){
 
   args::Flag savedb(parser, "savedb", "store results in db", {"savedb"});
   args::ValueFlag<std::string> argresultpath(parser, "resultpath", "The resultpath", {"result"});
+  args::ValueFlag<std::string> argfileprefix(parser, "fileprefix", "The fileprefix", {"prefix"});
   args::ValueFlag<std::string> argserverid(parser, "serverid", "The serverid", {"serverid"});
   args::Flag removeorignal(parser, "removeorignal", "remove orignal file", {"removeorignal"});
 
@@ -185,9 +186,11 @@ int main( int argc, char** argv ){
 
   std::vector<std::string> codes = im->getCodes();
   std::string resultpath = "";
+  std::string fileprefix = "";
 
 
   if (argresultpath){ resultpath=args::get(argresultpath); }
+  if (argfileprefix){ fileprefix=args::get(argfileprefix); }
   std::string id = boost::filesystem::basename(args::get(filename).c_str());
   
 
@@ -203,7 +206,7 @@ int main( int argc, char** argv ){
       std::cout<< "Directory Created: "<<resultpath<<std::endl;
     }
   }
-  std::string fname = boost::str( boost::format("%s%s.jpg") % resultpath % id );
+  std::string fname = boost::str( boost::format("%s/%s%s.jpg") % resultpath % fileprefix % id );
 
 
   std::cout << "ALL CODES: " << std::endl;

@@ -20,6 +20,7 @@ void Image::showImage(cv::Mat& src,int ww){
     int y=src.rows /5;
     cv::Mat res = cv::Mat(x, y, CV_8UC1);
     cv::resize(rotated, res, cv::Size(x, y), 0, 0, 3);
+
     cv::namedWindow("DEBUG", CV_WINDOW_AUTOSIZE );
     cv::imshow("DEBUG", res );
     cv::waitKey(ww);
@@ -74,7 +75,10 @@ void Image::open(const char* filename){
     cv::Mat mat = cv::imread( filename, cv::IMREAD_GRAYSCALE );
     if (mat.rows!=2048 || mat.rows != 4096 ){
       std::cout << "rotate \"" << filename << "\"." << std::endl;
-      cv::rotate(mat, mat, 2);
+      //cv::rotate(mat, mat, 2);
+      transpose(mat, mat);
+      flip(mat, mat, 0);
+
     }
     setImage(mat);
   } catch (cv::Exception& e) {

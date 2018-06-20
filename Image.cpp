@@ -211,7 +211,7 @@ void Image::datamatrix(cv::Mat &image){
   imgScanCount = 0;
   pageScanCount = 0;
   opt = GetDefaultOptions();
-  //opt.timeoutMS=10000;
+  opt.timeoutMS=2000;
 
   if ((image.rows < 1000) && (image.cols < 1000)){
     img = dmtxImage(image);

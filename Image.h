@@ -67,10 +67,8 @@ public:
   void barcode();
 
   DmtxImage* dmtxImage(cv::Mat &image);
-  cv::Mat largestSimpleContour(cv::Mat& src);
-
-
   std::vector<cv::Mat> findDMTXRectangles(cv::Mat &gray);
+  cv::Mat largestSimpleContour(cv::Mat& src);
   std::vector<std::string> getCodes();
   cv::Mat getImage();
 

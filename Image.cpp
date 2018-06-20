@@ -100,8 +100,14 @@ cv::Mat Image::largestSimpleContour(cv::Mat& src){
   _debugTime("start largestSimpleContour");
 
   cv::Mat thr;
-  cv::threshold(src, thr,subtractMean, 255,cv::THRESH_BINARY);
 
+  cv::Size ksize(15,15);
+  cv::GaussianBlur(src, thr, ksize, 0);
+
+
+  cv::threshold(thr, thr,subtractMean, 255,cv::THRESH_BINARY);
+
+  showImage(thr,5000);
 
   int blength = thr.cols;
   int i=blength;
@@ -132,7 +138,7 @@ cv::Mat Image::largestSimpleContour(cv::Mat& src){
       break;
     }
     */
-    //std::cout << "currentAVG at i " << currentAVG << " - " << lastAVG << std::endl;
+    std::cout << "currentAVG at i " << currentAVG << " - " << lastAVG << std::endl;
     lastAVG=0;
     cAVG=0;
     for(h=avglength-1;h>0;h--){
@@ -145,16 +151,18 @@ cv::Mat Image::largestSimpleContour(cv::Mat& src){
     }
     lastAVG=lastAVG/(avglength-1);
     cAVG=(cAVG+currentAVG)/(avglength);
-
-    //std::cout << "currentAVG at i "<< i << " current " << cAVG << " - last " << lastAVG << std::endl;
-    if ((i<blength-avglength*2) && (cAVG>lastAVG)) {
-      //std::cout << "rising edge " << cAVG << " vs. " << lastAVG << std::endl;
-      break;
+    if (lastAVG>5){ // avoid noise
+      std::cout << "currentAVG at i "<< i << " current " << cAVG << " - last " << lastAVG << std::endl;
+      if ((i<blength-avglength*2) && (cAVG>lastAVG)) {
+        std::cout << "rising edge " << cAVG << " vs. " << lastAVG << std::endl;
+        break;
+      }
     }
+
     avgbuffer[0]=currentAVG;
     cavgbuffer[0]=currentAVG;
   }
-  //std::cout << "largestSimpleContour at i " << i << std::endl;
+  std::cout << "largestSimpleContour at i " << i << std::endl;
   if (i<200){
     std::cerr << "this should not happen the contour is to small " << i << " use the hole image "<< std::endl;
     i=blength;
@@ -183,64 +191,68 @@ void Image::datamatrix(cv::Mat &image){
   imgScanCount = 0;
   pageScanCount = 0;
   opt = GetDefaultOptions();
-  img = dmtxImage(image);
+  opt.timeoutMS=3000;
+
+  if ((img.rows < 200) && (img.cols < 200)){
+    img = dmtxImage(image);
 
 
-  dmtxImageSetProp(img, DmtxPropImageFlip, DmtxFlipNone);
+    dmtxImageSetProp(img, DmtxPropImageFlip, DmtxFlipNone);
 
-  /* Initialize scan */
-  dec = dmtxDecodeCreate(img, opt.shrinkMin);
-  if(dec == NULL) {
-    //CleanupMagick(&wand, DmtxFalse);
-    //FatalError(EX_SOFTWARE, "decode create error");
-  }
-
-  err = SetDecodeOptions(dec, img, &opt);
-  if(err != DmtxPass) {
-    //CleanupMagick(&wand, DmtxFalse);
-    //FatalError(EX_SOFTWARE, "decode option error");
-  }
-
-  /* Find and decode every barcode on page */
-  pageScanCount = 0;
-  for(;;) {
-    /* Find next barcode region within image, but do not decode yet */
-    if(opt.timeoutMS == DmtxUndefined)
-        reg = dmtxRegionFindNext(dec, NULL);
-    else
-        reg = dmtxRegionFindNext(dec, &timeout);
-
-    /* Finished file or ran out of time before finding another region */
-    if(reg == NULL)
-        break;
-
-    /* Decode region based on requested barcode mode */
-    if(opt.mosaic == DmtxTrue)
-        msg = dmtxDecodeMosaicRegion(dec, reg, opt.correctionsMax);
-    else
-        msg = dmtxDecodeMatrixRegion(dec, reg, opt.correctionsMax);
-
-    if(msg != NULL) {
-        //PrintStats(dec, reg, msg, imgPageIndex, &opt);
-        //PrintMessage(reg, msg, &opt);
-
-        std::string decodedText = std::string((char*) msg->output);
-        std::cout << ">" << decodedText << std::endl;
-        codes.push_back(decodedText);
-        /*
-        for(i = 0; i < msg->codeSize; i++) {
-          std::cout << "" << msg->code[i];
-        } 
-        */
-        //std::cout << "" << msg->code[i] << std::endl;
-        pageScanCount++;
-        imgScanCount++;
-        dmtxMessageDestroy(&msg);
+    /* Initialize scan */
+    dec = dmtxDecodeCreate(img, opt.shrinkMin);
+    if(dec == NULL) {
+      //CleanupMagick(&wand, DmtxFalse);
+      //FatalError(EX_SOFTWARE, "decode create error");
     }
-    dmtxRegionDestroy(&reg);
+
+    err = SetDecodeOptions(dec, img, &opt);
+    if(err != DmtxPass) {
+      //CleanupMagick(&wand, DmtxFalse);
+      //FatalError(EX_SOFTWARE, "decode option error");
+    }
+
+    /* Find and decode every barcode on page */
+    pageScanCount = 0;
+    for(;;) {
+      /* Find next barcode region within image, but do not decode yet */
+      if(opt.timeoutMS == DmtxUndefined)
+          reg = dmtxRegionFindNext(dec, NULL);
+      else
+          reg = dmtxRegionFindNext(dec, &timeout);
+
+      /* Finished file or ran out of time before finding another region */
+      if(reg == NULL)
+          break;
+
+      /* Decode region based on requested barcode mode */
+      if(opt.mosaic == DmtxTrue)
+          msg = dmtxDecodeMosaicRegion(dec, reg, opt.correctionsMax);
+      else
+          msg = dmtxDecodeMatrixRegion(dec, reg, opt.correctionsMax);
+
+      if(msg != NULL) {
+          //PrintStats(dec, reg, msg, imgPageIndex, &opt);
+          //PrintMessage(reg, msg, &opt);
+
+          std::string decodedText = std::string((char*) msg->output);
+          std::cout << ">" << decodedText << std::endl;
+          codes.push_back(decodedText);
+          /*
+          for(i = 0; i < msg->codeSize; i++) {
+            std::cout << "" << msg->code[i];
+          } 
+          */
+          //std::cout << "" << msg->code[i] << std::endl;
+          pageScanCount++;
+          imgScanCount++;
+          dmtxMessageDestroy(&msg);
+      }
+      dmtxRegionDestroy(&reg);
+    }
+    dmtxDecodeDestroy(&dec);
+    dmtxImageDestroy(&img);
   }
-  dmtxDecodeDestroy(&dec);
-  dmtxImageDestroy(&img);
 }
 
 

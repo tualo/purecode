@@ -133,6 +133,7 @@ GetDefaultOptions(void)
    opt.sizeIdxExpected = DmtxSymbolShapeAuto;
    opt.edgeThresh = 5;
    opt.xMin = NULL;
+
    opt.xMax = NULL;
    opt.yMin = NULL;
    opt.yMax = NULL;

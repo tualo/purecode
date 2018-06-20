@@ -2,6 +2,9 @@
     "files.associations": {
         "__bit_reference": "cpp",
         "bitset": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "system_error": "cpp",
+        "ios": "cpp",
+        "__locale": "cpp"
     }
 }

@@ -15,6 +15,8 @@ std::vector<cv::Mat> Image::findDMTXRectangles(cv::Mat &gray){
 
     cv::threshold(tgray, mask, 0, 255, CV_THRESH_BINARY_INV | CV_THRESH_OTSU);
 
+    cv::erode(mask, mask, cv::Mat(),cv::Point(-1,-1), 5);
+    cv::dilate(mask, mask, cv::Mat(),cv::Point(-1,-1), 10);
     showImage(mask);
 
     // find contours (if always so easy to segment as your image, you could just add the black/rect pixels to a vector)
@@ -61,12 +63,10 @@ std::vector<cv::Mat> Image::findDMTXRectangles(cv::Mat &gray){
             try{
                 cv::Rect brect = boundingBox.boundingRect();
 
-                /*
-                std::cout << " brect.x " << brect.x << std::endl;
-                std::cout << " brect.y " << brect.y << std::endl;
-                std::cout << " brect.width " << brect.width << std::endl;
-                std::cout << " brect.height " << brect.height << std::endl;
-                */
+               brect.x-=10;
+               brect.y-=10;
+               brect.width+=20;
+               brect.height+=20;
                 if (brect.x<0) brect.x = 0;
                 if (brect.y<0) brect.y = 0;
                 if (brect.width>=gray.cols)  brect.width=gray.cols;
@@ -78,7 +78,20 @@ std::vector<cv::Mat> Image::findDMTXRectangles(cv::Mat &gray){
 
                 }else{
                 */    
-                results.push_back(gray(brect));
+
+                cv::Mat imgx = gray(brect);
+                
+                
+                if ( (imgx.cols>45) && (imgx.rows>45) ){
+                    /*
+                    std::cout << " brect.x " << brect.x << std::endl;
+                    std::cout << " brect.y " << brect.y << std::endl;
+                    std::cout << " brect.width " << brect.width << std::endl;
+                    std::cout << " brect.height " << brect.height << std::endl;
+                    std::cout << " w/h " << imgx.cols << "*" << imgx.rows << std::endl;
+                    */
+                    results.push_back(gray(brect));
+                }
                 //}
             }catch(cv::Exception cv_error){
                 // std::cerr << "findDMTXRectangles()" << cv_error.msg << std::endl;
@@ -108,7 +121,7 @@ std::vector<cv::Mat> Image::findDMTXRectangles(cv::Mat &gray){
     cv::line(drawing, corners[3], corners[0], cv::Scalar(255,255,255));
 
    
-    showImage(drawing,1000);
+    showImage(drawing,10000);
     
     return results;
 }

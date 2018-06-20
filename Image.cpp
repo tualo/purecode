@@ -15,11 +15,18 @@ void Image::showImage(cv::Mat& src){
 
 void Image::showImage(cv::Mat& src,int ww){
   if (showDebugWindow){
+    cv::Mat res;
     cv::Mat rotated=src.clone();
-    int x=src.cols /5;
-    int y=src.rows /5;
-    cv::Mat res = cv::Mat(x, y, CV_8UC1);
-    cv::resize(rotated, res, cv::Size(x, y), 0, 0, 3);
+
+    if (src.rows>800){
+      int x=src.cols /5;
+      int y=src.rows /5;
+      res = cv::Mat(x, y, CV_8UC1);
+      cv::resize(rotated, res, cv::Size(x, y), 0, 0, 3);
+    }else{
+      
+      res=src.clone();
+    }
 
     cv::namedWindow("DEBUG", CV_WINDOW_AUTOSIZE );
     cv::imshow("DEBUG", res );
@@ -146,7 +153,7 @@ cv::Mat Image::largestSimpleContour(cv::Mat& src){
       break;
     }
     */
-    std::cout << "currentAVG at i " << currentAVG << " - " << lastAVG << std::endl;
+    //std::cout << "currentAVG at i " << currentAVG << " - " << lastAVG << std::endl;
     lastAVG=0;
     cAVG=0;
     for(h=avglength-1;h>0;h--){
@@ -193,15 +200,17 @@ void Image::datamatrix(cv::Mat &image){
   DmtxMessage *msg;
   UserOptions opt;
 
+  //std::cout << "datamatrix -----------" << image.cols << "*" <<image.rows << std::endl;
+  //showImage(image,5000);
   int err;
   int imgScanCount, pageScanCount;
 
   imgScanCount = 0;
   pageScanCount = 0;
   opt = GetDefaultOptions();
-  opt.timeoutMS=3000;
+  //opt.timeoutMS=10000;
 
-//  if ((image.rows < 500) && (image.cols < 500)){
+  if ((image.rows < 1000) && (image.cols < 1000)){
     img = dmtxImage(image);
 
 
@@ -260,7 +269,7 @@ void Image::datamatrix(cv::Mat &image){
     }
     dmtxDecodeDestroy(&dec);
     dmtxImageDestroy(&img);
-//  }
+  }
 }
 
 
@@ -288,6 +297,13 @@ void Image::barcode(){
   showImage(mat);
   std::vector<cv::Mat> candidates = findDMTXRectangles(mat);
   for(cv::Mat candidate : candidates) {
+
+
+    std::cout << " w/h " << candidate.cols << "*" << candidate.rows << std::endl;
+    if ( (candidate.cols>15) && (candidate.rows>15) ){
+      showImage(candidate);
+    }
+
     datamatrix(candidate);
   }
 

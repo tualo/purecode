@@ -5,7 +5,7 @@ std::vector<cv::Mat> Image::findDMTXRectangles(cv::Mat &gray){
     cv::Mat tgray;
 
 
-    cv::Size ksize(5,5);
+    cv::Size ksize(15,15);
     cv::GaussianBlur(gray, tgray, ksize, 0);
 
 /*

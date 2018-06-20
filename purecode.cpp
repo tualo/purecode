@@ -250,7 +250,8 @@ int main( int argc, char** argv ){
     std::cout << "" << code << std::endl;
     if (savedb==1){
       std::string insertcode_sql = boost::str(insertcode % uuid % code );
-      if (mysql_query(con, insertcode_sql.c_str())){
+std::cout << "SQL: " <<  insertcode_sql << std::endl;
+        if (mysql_query(con, insertcode_sql.c_str())){
         fprintf(stderr, "%s\n", mysql_error(con));
       }
     }

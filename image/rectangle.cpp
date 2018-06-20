@@ -83,13 +83,13 @@ std::vector<cv::Mat> Image::findDMTXRectangles(cv::Mat &gray, bool bc){
                 
                 
                 if ( (imgx.cols>45) && (imgx.rows>45) ){
-                    
+                    /*
                     std::cout << " brect.x " << brect.x << std::endl;
                     std::cout << " brect.y " << brect.y << std::endl;
                     std::cout << " brect.width " << brect.width << std::endl;
                     std::cout << " brect.height " << brect.height << std::endl;
                     std::cout << " w/h " << imgx.cols << "*" << imgx.rows << std::endl;
-                    
+                    */
                     results.push_back(imgx);
                 }
                 //}

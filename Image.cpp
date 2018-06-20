@@ -76,8 +76,8 @@ void Image::open(const char* filename){
     if (mat.rows!=2048 || mat.rows != 4096 ){
       std::cout << "rotate \"" << filename << "\"." << std::endl;
       //cv::rotate(mat, mat, 2);
-      transpose(mat, mat);
-      flip(mat, mat, 0);
+      cv::transpose(mat, mat);
+      cv::flip(mat, mat, 0);
 
     }
     setImage(mat);

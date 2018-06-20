@@ -353,7 +353,7 @@ bcResult Image::barcode_internal(cv::Mat &part) {
     throw std::runtime_error("Error: Image::barcode_internal not a gray image");
   }
 
-
+try{
                 zxing::Ref<zxing::LuminanceSource> source = MatSource::create(part);
 
                 // Search for QR code
@@ -372,6 +372,9 @@ bcResult Image::barcode_internal(cv::Mat &part) {
 int resultPointCount = result->getResultPoints()->size();
 std::cout << "XZING" <<  result->getText()->getText() << std::endl;
 
+}catch(Exception error){
+  
+}
 cv::Mat grayo;
 int i_bc_thres_stop=250;
 int i_bc_thres_start=20;

@@ -72,11 +72,11 @@ void Image::open(const char* filename){
   try{
     cv::setUseOptimized(true);
     cv::Mat mat = cv::imread( filename, cv::IMREAD_GRAYSCALE );
-    setImage(mat);
     if (mat.rows!=2048 || mat.rows != 4096 ){
       std::cout << "rotate \"" << filename << "\"." << std::endl;
       cv::rotate(mat, mat, cv::ROTATE_90_COUNTERCLOCKWISE);
     }
+    setImage(mat);
   } catch (cv::Exception& e) {
       std::cerr << "Error opening file \"" << filename << "\". Reason: " << e.msg << std::endl;
       exit(1);

@@ -74,7 +74,7 @@ void Image::open(const char* filename){
     cv::Mat mat = cv::imread( filename, cv::IMREAD_GRAYSCALE );
     if (mat.rows!=2048 || mat.rows != 4096 ){
       std::cout << "rotate \"" << filename << "\"." << std::endl;
-      cv::rotate(mat, mat, cv::ROTATE_90_COUNTERCLOCKWISE);
+      cv::rotate(mat, mat, 2);
     }
     setImage(mat);
   } catch (cv::Exception& e) {

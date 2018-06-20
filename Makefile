@@ -33,9 +33,9 @@ CXXFLAGS   := -Wall -std=c++14 -O3 -m64  #e.g., CXXFLAGS=-g -O0 for debugging
 LDFLAGS    := $(shell mysql_config --libs_r)
 
 ifeq ($(OS),Darwin)
-LDLIBS     := $(shell mysql_config --libs) -L/usr/local/lib -ldmtx $(shell pkg-config zbar --cflags --libs) $(shell pkg-config opencv --libs) $(TESSERACT_LDLIBS) -lboost_system -lboost_regex -lboost_filesystem -lboost_thread-mt -lboost_chrono -lboost_iostreams -lboost_atomic-mt -lboost_date_time -lpthread
+LDLIBS     := $(shell mysql_config --libs) -L/usr/local/lib -ldmtx -lzxing $(shell pkg-config zbar --cflags --libs) $(shell pkg-config opencv --libs) $(TESSERACT_LDLIBS) -lboost_system -lboost_regex -lboost_filesystem -lboost_thread-mt -lboost_chrono -lboost_iostreams -lboost_atomic-mt -lboost_date_time -lpthread
 else
-LDLIBS     := $(shell mysql_config --libs)  -ldmtx $(shell pkg-config zbar --cflags --libs) $(shell pkg-config opencv --libs) $(TESSERACT_LDLIBS) -lboost_system -lboost_regex -lboost_filesystem -lboost_thread -lboost_chrono -lboost_iostreams -lboost_atomic -lboost_date_time -lpthread
+LDLIBS     := $(shell mysql_config --libs)  -ldmtx -lzxing $(shell pkg-config zbar --cflags --libs) $(shell pkg-config opencv --libs) $(TESSERACT_LDLIBS) -lboost_system -lboost_regex -lboost_filesystem -lboost_thread -lboost_chrono -lboost_iostreams -lboost_atomic -lboost_date_time -lpthread
 endif
 
 # Rules for building

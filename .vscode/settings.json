@@ -5,6 +5,19 @@
         "vector": "cpp",
         "system_error": "cpp",
         "ios": "cpp",
-        "__locale": "cpp"
+        "__locale": "cpp",
+        "__config": "cpp",
+        "__nullptr": "cpp",
+        "exception": "cpp",
+        "initializer_list": "cpp",
+        "new": "cpp",
+        "stdexcept": "cpp",
+        "typeinfo": "cpp",
+        "algorithm": "cpp",
+        "cfenv": "cpp",
+        "cctype": "cpp",
+        "cstddef": "cpp",
+        "cstdlib": "cpp",
+        "locale": "cpp"
     }
 }

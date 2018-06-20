@@ -40,6 +40,25 @@
 
 #include <dmtx.h>
 
+
+
+
+#include <zxing/common/Counted.h>
+#include <zxing/Binarizer.h>
+#include <zxing/MultiFormatReader.h>
+#include <zxing/Result.h>
+#include <zxing/ReaderException.h>
+#include <zxing/common/GlobalHistogramBinarizer.h>
+#include <zxing/Exception.h>
+#include <zxing/common/IllegalArgumentException.h>
+#include <zxing/BinaryBitmap.h>
+#include <zxing/DecodeHints.h>
+#include <zxing/qrcode/QRCodeReader.h>
+#include <zxing/MultiFormatReader.h>
+#include <zxing/MatSource.h>
+
+
+
 struct bcResult {
   cv::Point point;
   cv::Rect rect;
@@ -67,7 +86,9 @@ public:
   void barcode();
 
   DmtxImage* dmtxImage(cv::Mat &image);
-  std::vector<cv::Mat> findDMTXRectangles(cv::Mat &gray);
+  std::vector<cv::Mat> findDMTXRectangles(cv::Mat &gray,bool bc);
+  std::vector<cv::Mat> regions(cv::Mat &inputImage);
+
   cv::Mat largestSimpleContour(cv::Mat& src);
   std::vector<std::string> getCodes();
   cv::Mat getImage();
@@ -83,6 +104,7 @@ private:
   bool showDebug;
   bool showDebugWindow;
   bool showDebugTime;
+  bool debugRegions;
   double debug_last_time;
 
 

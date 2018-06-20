@@ -15,6 +15,7 @@ void Image::showImage(cv::Mat& src){
 
 void Image::showImage(cv::Mat& src,int ww){
   if (showDebugWindow){
+    try{
     cv::Mat res;
     cv::Mat rotated=src.clone();
 
@@ -31,6 +32,9 @@ void Image::showImage(cv::Mat& src,int ww){
     cv::namedWindow("DEBUG", CV_WINDOW_AUTOSIZE );
     cv::imshow("DEBUG", res );
     cv::waitKey(ww);
+    }catch(cv::Exception cv_error){
+        // std::cerr << "findDMTXRectangles()" << cv_error.msg << std::endl;
+    }
   }
 }
 
@@ -65,6 +69,7 @@ Image::Image() :
 
   showDebugWindowWaitTime=500;
   subtractMean=20;
+  debugRegions=true;
 
 }
 
@@ -211,7 +216,7 @@ void Image::datamatrix(cv::Mat &image){
   imgScanCount = 0;
   pageScanCount = 0;
   opt = GetDefaultOptions();
-  opt.timeoutMS=2000;
+  //opt.timeoutMS=2000;
 
   if ((image.rows < 1000) && (image.cols < 1000)){
     img = dmtxImage(image);
@@ -297,20 +302,25 @@ void Image::barcode(){
   codes={};
   cv::Mat mat = largestSimpleContour(processImage);
   reducedImage = mat.clone();
-  showImage(mat);
-  std::vector<cv::Mat> candidates = findDMTXRectangles(mat);
+  std::vector<cv::Mat> candidates = findDMTXRectangles(mat,false);
   for(cv::Mat candidate : candidates) {
-
-
     std::cout << " w/h " << candidate.cols << "*" << candidate.rows << std::endl;
     if ( (candidate.cols>15) && (candidate.rows>15) ){
       showImage(candidate);
     }
-
     datamatrix(candidate);
   }
+  std::cout << "###############" << std::endl;
 
-  barcode_internal(processImage);
+  candidates = regions(mat);
+  for(cv::Mat candidate : candidates) {
+    std::cout << " w/h " << candidate.cols << "*" << candidate.rows << std::endl;
+    if ( (candidate.cols>15) && (candidate.rows>15) ){
+      showImage(candidate);
+    }
+    barcode_internal(candidate);
+  }
+
 
   sort( codes.begin(), codes.end() );
   codes.erase( unique( codes.begin(), codes.end() ), codes.end() );
@@ -343,15 +353,34 @@ bcResult Image::barcode_internal(cv::Mat &part) {
     throw std::runtime_error("Error: Image::barcode_internal not a gray image");
   }
 
+
+                zxing::Ref<zxing::LuminanceSource> source = MatSource::create(part);
+
+                // Search for QR code
+                zxing::Ref<zxing::Reader> reader;
+/*
+                if (multi) {
+                    reader.reset(new zxing::MultiFormatReader);
+                } else {
+                  */
+                    reader.reset(new zxing::qrcode::QRCodeReader);
+//                }
+
+                zxing::Ref<zxing::Binarizer> binarizer(new zxing::GlobalHistogramBinarizer(source));
+                zxing::Ref<zxing::BinaryBitmap> bitmap(new zxing::BinaryBitmap(binarizer));
+                zxing::Ref<zxing::Result> result(reader->decode(bitmap, zxing::DecodeHints(zxing::DecodeHints::TRYHARDER_HINT)));
+int resultPointCount = result->getResultPoints()->size();
+std::cout << "XZING" <<  result->getText()->getText() << std::endl;
+
 cv::Mat grayo;
 int i_bc_thres_stop=250;
-int i_bc_thres_start=60;
-int i_bc_thres_step=5;
+int i_bc_thres_start=20;
+int i_bc_thres_step=3;
 
 for (int thres=i_bc_thres_stop; thres>=i_bc_thres_start ;thres-=i_bc_thres_step){
 
       cv::threshold(part,grayo,thres,255, CV_THRESH_BINARY );
-      //showImage(grayo,100);
+      showImage(grayo,10);
 
       /*
       cv::Size ksize(3,3);
@@ -359,6 +388,13 @@ for (int thres=i_bc_thres_stop; thres>=i_bc_thres_start ;thres-=i_bc_thres_step)
       */
 
       //cv::Mat grayo=part.clone();
+      if (thres==i_bc_thres_stop){
+        grayo=part.clone();
+        showImage(grayo,10);
+      }else{
+        cv::threshold(part,grayo,thres,255, CV_THRESH_BINARY );
+        showImage(grayo,10);
+      }
       zbar::Image* _image;
       zbar::ImageScanner* _imageScanner;
       _image = new zbar::Image(grayo.cols, grayo.rows, "Y800", nullptr, 0);
@@ -367,6 +403,7 @@ for (int thres=i_bc_thres_stop; thres>=i_bc_thres_start ;thres-=i_bc_thres_step)
 
       
       _imageScanner->set_config(zbar::ZBAR_NONE, zbar::ZBAR_CFG_ENABLE, 1);
+
       _imageScanner->set_config(zbar::ZBAR_CODE128, zbar::ZBAR_CFG_ENABLE, 1);
       _imageScanner->set_config(zbar::ZBAR_CODE128, zbar::ZBAR_CFG_ADD_CHECK, 1);
       _imageScanner->set_config(zbar::ZBAR_CODE128, zbar::ZBAR_CFG_EMIT_CHECK, 0);

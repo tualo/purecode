@@ -73,6 +73,10 @@ void Image::open(const char* filename){
     cv::setUseOptimized(true);
     cv::Mat mat = cv::imread( filename, cv::IMREAD_GRAYSCALE );
     setImage(mat);
+    if (mat.rows!=2048 || mat.rows != 4096 ){
+      std::cout << "rotate \"" << filename << "\"." << std::endl;
+      cv::rotate(mat, mat, cv::ROTATE_90_COUNTERCLOCKWISE);
+    }
   } catch (cv::Exception& e) {
       std::cerr << "Error opening file \"" << filename << "\". Reason: " << e.msg << std::endl;
       exit(1);
@@ -152,9 +156,9 @@ cv::Mat Image::largestSimpleContour(cv::Mat& src){
     lastAVG=lastAVG/(avglength-1);
     cAVG=(cAVG+currentAVG)/(avglength);
     if (lastAVG>5){ // avoid noise
-      std::cout << "currentAVG at i "<< i << " current " << cAVG << " - last " << lastAVG << std::endl;
+//      std::cout << "currentAVG at i "<< i << " current " << cAVG << " - last " << lastAVG << std::endl;
       if ((i<blength-avglength*2) && (cAVG>lastAVG)) {
-        std::cout << "rising edge " << cAVG << " vs. " << lastAVG << std::endl;
+//        std::cout << "rising edge " << cAVG << " vs. " << lastAVG << std::endl;
         break;
       }
     }
@@ -162,9 +166,9 @@ cv::Mat Image::largestSimpleContour(cv::Mat& src){
     avgbuffer[0]=currentAVG;
     cavgbuffer[0]=currentAVG;
   }
-  std::cout << "largestSimpleContour at i " << i << std::endl;
+//  std::cout << "largestSimpleContour at i " << i << std::endl;
   if (i<200){
-    std::cerr << "this should not happen the contour is to small " << i << " use the hole image "<< std::endl;
+  //  std::cerr << "this should not happen the contour is to small " << i << " use the hole image "<< std::endl;
     i=blength;
   }
 
@@ -193,7 +197,7 @@ void Image::datamatrix(cv::Mat &image){
   opt = GetDefaultOptions();
   opt.timeoutMS=3000;
 
-  if ((image.rows < 500) && (image.cols < 500)){
+//  if ((image.rows < 500) && (image.cols < 500)){
     img = dmtxImage(image);
 
 
@@ -252,7 +256,7 @@ void Image::datamatrix(cv::Mat &image){
     }
     dmtxDecodeDestroy(&dec);
     dmtxImageDestroy(&img);
-  }
+//  }
 }
 
 

@@ -80,7 +80,8 @@ void Image::open(const char* filename){
   try{
     cv::setUseOptimized(true);
     cv::Mat mat = cv::imread( filename, cv::IMREAD_GRAYSCALE );
-    if (mat.cols==2048 || mat.rows == 4096 ){
+      std::cout << " \"" << filename << "\" " << mat.rows << std::endl;
+    if ((mat.cols==2048) && (mat.rows != 4096) ){
 
     }else{
       std::cout << "rotate \"" << filename << "\" " << mat.cols << std::endl;

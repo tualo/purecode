@@ -372,8 +372,8 @@ try{
 int resultPointCount = result->getResultPoints()->size();
 std::cout << "XZING" <<  result->getText()->getText() << std::endl;
 
-}catch(Exception error){
-  
+}catch(zxing::ReaderException zerror){
+
 }
 cv::Mat grayo;
 int i_bc_thres_stop=250;
